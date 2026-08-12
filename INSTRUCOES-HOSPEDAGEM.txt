@@ -1,0 +1,37 @@
+HELP DESK - PACOTE ATUALIZADO PARA TESTE
+
+ANTES DE ENVIAR
+1. Faça backup dos arquivos e do banco atuais.
+2. Preserve config/db.php e todo o conteúdo das pastas de uploads.
+
+ATUALIZACAO DE QUEM JA INSTALOU A CENTRAL E A MIGRACAO
+Substitua estes arquivos:
+  assets/css/helpdesk-pro.css
+  assets/js/helpdesk-pro.js
+  controllers/solicitacao-funcoes.php
+  database/schema.sql
+  views/admin/dashboard.php
+
+Não execute novamente a migration se ela já foi importada com sucesso.
+A correção de database/schema.sql é para instalações novas e não altera o
+banco atual.
+
+INSTALACAO COMPLETA
+1. Em banco existente sem a Central, importe uma única vez:
+   database/migrations/20260811_central_servicos.sql
+2. Preserve na hospedagem:
+   config/db.php
+   uploads/catalogo/
+   uploads/clientes/logos/
+3. Envie o restante do pacote, substituindo os arquivos existentes.
+4. Não importe database/schema.sql sobre um banco em uso.
+
+HARDENING DESTA VERSAO
+- Corrige os campos de rastreabilidade no schema de instalações novas.
+- Remove os campos indevidos da tabela eventos no schema.
+- Torna a Central de Serviços uma opção PHP nativa do menu técnico.
+- Melhora o registro da atividade de abertura para todos os canais.
+- Mantém o modal corrigido do botão Gerenciar.
+
+VERSAO
+Commit funcional: bd2e802

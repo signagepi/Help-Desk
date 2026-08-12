@@ -22,14 +22,6 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   });
   if (/\/views\/admin\/dashboard\.php$/.test(window.location.pathname)) {
-    const container = document.querySelector('.hd-main > .hd-container');
-    if (container) {
-      const actions = document.createElement('div');
-      actions.className = 'hd-actions hd-central-shortcut';
-      actions.innerHTML = '<a class="hd-btn hd-btn-primary" href="central-servicos.php">🧰 Central de Serviços</a>';
-      container.insertBefore(actions, container.firstChild);
-    }
-
     const manageDetails = Array.from(document.querySelectorAll('.hd-table details'));
     const closeManage = function (details) {
       details.open = false;

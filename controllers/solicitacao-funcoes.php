@@ -25,6 +25,9 @@ function criarSolicitacao(PDO $pdo, array $dados) {
     $horasSla = ['baixa' => 72, 'media' => 48, 'alta' => 24, 'urgente' => 8];
     $prazo = date('Y-m-d H:i:s', strtotime('+' . $horasSla[$prioridade] . ' hours'));
     $origem = textoSolicitacao($dados['origem'] ?? 'Portal do cliente');
+    if ($origem === '') {
+        $origem = 'Não informada';
+    }
     $registradoPorTipo = textoSolicitacao($dados['registrado_por_tipo'] ?? 'cliente');
     $registradoPorId = (int)($dados['registrado_por_id'] ?? 0);
     if (!in_array($registradoPorTipo, ['cliente', 'admin', 'api'], true)) {
@@ -58,11 +61,18 @@ function criarSolicitacao(PDO $pdo, array $dados) {
         $protocolo = 'INF-' . date('Y') . '-' . str_pad((string)$id, 5, '0', STR_PAD_LEFT);
         $pdo->prepare('UPDATE solicitacoes SET protocolo = ? WHERE id = ?')->execute([$protocolo, $id]);
 
-        $descricaoAtividade = $origem === 'Portal do cliente'
-            ? 'Solicitação aberta pelo portal do cliente.'
-            : 'Solicitação registrada por técnico. Origem informada: ' . $origem . '.';
+        $solicitanteNome = textoSolicitacao($dados['solicitante_nome'] ?? '');
+        $partesAtividade = ['O.S. aberta', 'Origem: ' . $origem];
+        if ($solicitanteNome !== '') {
+            $partesAtividade[] = 'Solicitante: ' . $solicitanteNome;
+        }
+        $partesAtividade[] = 'Registrada por: ' . $registradoPorTipo;
+        $descricaoAtividade = implode('. ', $partesAtividade) . '.';
+        $usuarioTipoAtividade = in_array($registradoPorTipo, ['admin', 'cliente'], true)
+            ? $registradoPorTipo
+            : 'sistema';
         $stmt = $pdo->prepare('INSERT INTO solicitacao_atividades (solicitacao_id, usuario_tipo, usuario_id, acao, descricao) VALUES (?, ?, ?, ?, ?)');
-        $stmt->execute([$id, $registradoPorTipo, $registradoPorId, 'abertura', $descricaoAtividade]);
+        $stmt->execute([$id, $usuarioTipoAtividade, $registradoPorId ?: null, 'abertura', $descricaoAtividade]);
 
         $pdo->commit();
         return ['id' => $id, 'protocolo' => $protocolo];
