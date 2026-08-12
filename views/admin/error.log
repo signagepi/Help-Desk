@@ -1,0 +1,1 @@
+2025-11-15 12:58:24 - EXCEÇÃO: Failed opening required 'config/db.php' (include_path='.:/usr/share/pear/') em /home/vol11_6/infinityfree.com/if0_40238969/htdocs/views/admin/gerenciar-portfolio.php linha 27
