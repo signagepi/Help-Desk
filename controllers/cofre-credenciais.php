@@ -4,6 +4,7 @@ session_start();
 require __DIR__ . '/../config/db.php';
 require __DIR__ . '/../lib/cofre-funcoes.php';
 cofre_cabecalhos();
+cofre_exigir_https();
 if (!cofre_admin_id()) { header('Location: ../auth/login-admin.php'); exit; }
 $admin = cofre_admin_id();
 $destino = '../views/admin/cofre-senhas.php';
