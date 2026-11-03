@@ -9,7 +9,25 @@ if (!cofre_admin_id()) { header('Location: ../../auth/login-admin.php'); exit; }
 function h_cofre($texto): string { return htmlspecialchars((string) $texto, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); }
 $admin = cofre_admin_id();
 $chaveOk = true;
-try { $chave = cofre_chave(); sodium_memzero($chave); } catch (Throwable $e) { $chaveOk = false; }
+$chaveErro = 'Não foi possível validar a configuração do cofre.';
+try {
+    $chave = cofre_chave();
+    sodium_memzero($chave);
+} catch (Throwable $e) {
+    $chaveOk = false;
+    // Apenas erros predefinidos e sem valores de segredos podem ser exibidos.
+    $mensagensSeguras = [
+        'O cofre necessita da extensão PHP sodium.',
+        'O cofre não está configurado: defina HELPDESK_VAULT_KEY ou configure o arquivo privado.',
+        'Configuração local do cofre inválida.',
+        'A chave deve estar em um arquivo privado, fora das pastas públicas.',
+        'Arquivo da chave inacessível ou com permissões inseguras (use 0600).',
+        'A chave do cofre é inválida. Verifique a configuração sem divulgar seu conteúdo.',
+    ];
+    if ($e instanceof RuntimeException && in_array($e->getMessage(), $mensagensSeguras, true)) {
+        $chaveErro = $e->getMessage();
+    }
+}
 $clientes = $pdo->query('SELECT id, nome FROM clientes ORDER BY nome')->fetchAll(PDO::FETCH_ASSOC);
 $q = mb_substr(trim((string) ($_GET['q'] ?? '')), 0, 100);
 $clienteFiltro = filter_var($_GET['cliente_id'] ?? 0, FILTER_VALIDATE_INT) ?: 0;
@@ -49,7 +67,7 @@ unset($_SESSION['cofre_aviso'], $_SESSION['cofre_erro']);
 </div></header>
 <main class="hd-main"><div class="hd-container cofre-container">
 <p class="cofre-intro">Guarde acessos pessoais ou de clientes. Usuário, senha, endereços e observações ficam criptografados. A consulta exige sua senha administrativa e fica registrada no histórico.</p>
-<?php if (!$chaveOk): ?><div class="hd-alert hd-alert-error" role="alert">O cofre está indisponível: configure a extensão sodium e a variável de ambiente <code>HELPDESK_VAULT_KEY</code> no servidor. Não cadastre senhas até concluir a configuração.</div><?php endif; ?>
+<?php if (!$chaveOk): ?><div class="hd-alert hd-alert-error" role="alert">O cofre está indisponível: <?= h_cofre($chaveErro) ?> Não cadastre senhas até concluir a configuração.</div><?php endif; ?>
 <?php if ($aviso): ?><div class="hd-alert hd-alert-success" role="status"><?= h_cofre($aviso) ?></div><?php endif; ?>
 <?php if ($erro): ?><div class="hd-alert hd-alert-error" role="alert"><?= h_cofre($erro) ?></div><?php endif; ?>
 <section class="hd-card hd-card-pad cofre-card" aria-labelledby="cofre-titulo-lista">
