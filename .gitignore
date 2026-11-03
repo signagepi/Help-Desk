@@ -13,3 +13,6 @@
 *.bak
 *.sql.gz
 *.zip
+
+# Caminho local de chave privada (não publicar)
+/config/cofre-local.php
