@@ -4,6 +4,7 @@ session_start();
 require __DIR__ . '/../config/db.php';
 require __DIR__ . '/../lib/cofre-funcoes.php';
 cofre_cabecalhos(true);
+cofre_exigir_https();
 if (!cofre_admin_id()) { http_response_code(401); echo json_encode(['erro' => 'Sessão expirada.']); exit; }
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') { http_response_code(405); echo json_encode(['erro' => 'Método não permitido.']); exit; }
 try {
