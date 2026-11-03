@@ -1,0 +1,10 @@
+.cofre-container{max-width:1160px}
+.cofre-intro{line-height:1.6;color:var(--hd-muted);margin:0 0 18px}
+.cofre-card{margin-bottom:20px}
+.cofre-confirmacao{max-width:460px}
+.cofre-resultado{padding:18px;border-radius:16px;background:var(--hd-surface,#f7f9fd);border:1px solid var(--hd-border,#dbe3ee);margin-top:16px}
+.cofre-resultado[hidden]{display:none}
+.cofre-resultado h3{margin:0 0 16px}
+#cofre-status{min-height:1.5em;font-size:14px;color:var(--hd-muted)}
+.cofre-card .hd-actions{display:flex;gap:8px;flex-wrap:wrap}
+@media(max-width:720px){.cofre-card .hd-table{font-size:13px}.cofre-card .hd-actions{flex-direction:column;align-items:stretch}}
