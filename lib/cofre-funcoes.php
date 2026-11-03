@@ -54,10 +54,40 @@ function cofre_chave(): string
     if (!function_exists('sodium_crypto_aead_xchacha20poly1305_ietf_encrypt')) {
         throw new RuntimeException('O cofre necessita da extensão PHP sodium.');
     }
+
+    // Preferir a variável de ambiente quando a hospedagem permitir.
     $bruta = getenv('HELPDESK_VAULT_KEY');
-    $chave = is_string($bruta) ? base64_decode($bruta, true) : false;
+    if (!is_string($bruta) || $bruta === '') {
+        // Em cPanel sem terminal: arquivo local aponta para a chave FORA da web.
+        // Este arquivo guarda SOMENTE o caminho da chave; nunca seu conteúdo.
+        $config = dirname(__DIR__) . '/config/cofre-local.php';
+        if (!is_file($config)) {
+            throw new RuntimeException('O cofre não está configurado: defina HELPDESK_VAULT_KEY ou configure o arquivo privado.');
+        }
+        $opcoes = require $config;
+        if (!is_array($opcoes) || !isset($opcoes['arquivo_chave']) || !is_string($opcoes['arquivo_chave'])) {
+            throw new RuntimeException('Configuração local do cofre inválida.');
+        }
+
+        $arquivo = realpath($opcoes['arquivo_chave']);
+        $raizSite = realpath((string) ($_SERVER['DOCUMENT_ROOT'] ?? dirname(__DIR__)));
+        if ($arquivo === false || $raizSite === false || !is_file($arquivo)
+            || $arquivo === $raizSite
+            || str_starts_with($arquivo, $raizSite . DIRECTORY_SEPARATOR)
+            || preg_match('~/(?:public_html|www|htdocs|httpdocs)(?:/|$)~i', str_replace('\\', '/', $arquivo))) {
+            throw new RuntimeException('A chave deve estar em um arquivo privado, fora das pastas públicas.');
+        }
+        // Não permitir leitura por outros usuários da hospedagem.
+        $modo = fileperms($arquivo);
+        if ($modo === false || (($modo & 0007) !== 0) || !is_readable($arquivo) || filesize($arquivo) > 256) {
+            throw new RuntimeException('Arquivo da chave inacessível ou com permissões inseguras (use 0600).');
+        }
+        $bruta = trim((string) file_get_contents($arquivo));
+    }
+
+    $chave = base64_decode($bruta, true);
     if ($chave === false || strlen($chave) !== SODIUM_CRYPTO_AEAD_XCHACHA20POLY1305_IETF_KEYBYTES) {
-        throw new RuntimeException('O cofre não está configurado. Solicite a configuração segura da chave ao responsável pelo servidor.');
+        throw new RuntimeException('A chave do cofre é inválida. Verifique a configuração sem divulgar seu conteúdo.');
     }
     return $chave;
 }
