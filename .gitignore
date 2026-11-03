@@ -1,0 +1,15 @@
+# Segredos e configurações locais (nunca versionar)
+/config/db.php
+/.env
+/.env.*
+!/.env.example
+/config/*.local.php
+
+# Dados de produção e arquivos temporários
+/backups/
+/tmp/
+/uploads/
+/views/admin/*.log
+*.bak
+*.sql.gz
+*.zip
