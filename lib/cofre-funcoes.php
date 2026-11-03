@@ -13,7 +13,7 @@ function cofre_cabecalhos(bool $json = false): void
     if ($json) {
         header('Content-Type: application/json; charset=utf-8');
     } else {
-        header("Content-Security-Policy: default-src 'none'; style-src 'self'; script-src 'self'; img-src 'self' data:; base-uri 'none'; form-action 'self'; frame-ancestors 'none'");
+        header("Content-Security-Policy: default-src 'none'; style-src 'self'; script-src 'self'; connect-src 'self'; img-src 'self' data:; base-uri 'none'; form-action 'self'; frame-ancestors 'none'");
     }
 }
 
