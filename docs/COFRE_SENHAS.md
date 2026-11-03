@@ -19,7 +19,7 @@ Módulo administrativo para credenciais pessoais (privadas por administrador) e 
 
 1. No **Windows PowerShell do seu próprio computador**, execute o código abaixo. Ele cria um arquivo com **uma chave aleatória inédita**, sem exibi-la no terminal ou no ChatGPT:
 
-   \`\`\`powershell
+   ```powershell
    $bytes = New-Object byte[] 32
    $rng = [System.Security.Cryptography.RandomNumberGenerator]::Create()
    try {
@@ -31,22 +31,22 @@ Módulo administrativo para credenciais pessoais (privadas por administrador) e 
        $rng.Dispose()
        [Array]::Clear($bytes, 0, $bytes.Length)
    }
-   \`\`\`
+   ```
 
-2. No **Gerenciador de Arquivos do cPanel**, navegue até a pasta inicial da conta (um nível acima de \`public_html\`). Crie a pasta \`helpdesk-private\`, com permissão **0700**, e envie \`cofre.key\` para dentro dela. Defina permissão **0600** no arquivo (ou **0640**, se o PHP exigir acesso de grupo e esse grupo for controlado). O cPanel mostrará o caminho absoluto, geralmente \`/home/USUARIO/helpdesk-private/cofre.key\`.
-3. Na pasta \`config\` do Helpdesk, crie **localmente no cPanel** o arquivo \`cofre-local.php\` contendo apenas o **caminho** (não a chave), adaptado ao caminho absoluto real:
+2. No **Gerenciador de Arquivos do cPanel**, navegue até a pasta inicial da conta (um nível acima de `public_html`). Crie a pasta `helpdesk-private`, com permissão **0700**, e envie `cofre.key` para dentro dela. Defina permissão **0600** no arquivo (ou **0640**, se o PHP exigir acesso de grupo e esse grupo for controlado). O cPanel mostrará o caminho absoluto, geralmente `/home/USUARIO/helpdesk-private/cofre.key`.
+3. Na pasta `config` do Helpdesk, crie **localmente no cPanel** o arquivo `cofre-local.php` contendo apenas o **caminho** (não a chave), adaptado ao caminho absoluto real:
 
-   \`\`\`php
+   ```php
    <?php
    return ['arquivo_chave' => '/home/USUARIO/helpdesk-private/cofre.key'];
-   \`\`\`
+   ```
 
-   **Não envie \`cofre-local.php\` nem \`cofre.key\` para o GitHub.** O primeiro arquivo é ignorado pelo .gitignore; o segundo deve permanecer fora do diretório público.
-4. Envie para o servidor a versão atualizada de \`lib/cofre-funcoes.php\` da branch, que aceita esta opção. A aplicação continua dando preferência à variável \`HELPDESK_VAULT_KEY\`, caso exista.
+   **Não envie `cofre-local.php` nem `cofre.key` para o GitHub.** O primeiro arquivo é ignorado pelo .gitignore; o segundo deve permanecer fora do diretório público.
+4. Envie para o servidor a versão atualizada de `lib/cofre-funcoes.php` da branch, que aceita esta opção. A aplicação continua dando preferência à variável `HELPDESK_VAULT_KEY`, caso exista.
 5. Acesse o cofre por **HTTPS**, confirme que o aviso de configuração desapareceu e faça cadastro, consulta e exclusão com **uma credencial fictícia**. Verifique a auditoria.
-6. Proteja a cópia local de \`cofre.key\` em um gerenciador de segredos ou backup criptografado, e retire-a de Downloads. Não altere a chave após cadastrar credenciais sem um procedimento planejado de rotação, pois a chave anterior é necessária para decriptá-las.
+6. Proteja a cópia local de `cofre.key` em um gerenciador de segredos ou backup criptografado, e retire-a de Downloads. Não altere a chave após cadastrar credenciais sem um procedimento planejado de rotação, pois a chave anterior é necessária para decriptá-las.
 
-Se a hospedagem bloquear a leitura de arquivos fora do diretório público (\`open_basedir\`) ou impedir os modos de permissão corretos, **não mova a chave para public_html**. Solicite ao provedor permissão para um diretório privado ou configuração segura da variável de ambiente.
+Se a hospedagem bloquear a leitura de arquivos fora do diretório público (`open_basedir`) ou impedir os modos de permissão corretos, **não mova a chave para public_html**. Solicite ao provedor permissão para um diretório privado ou configuração segura da variável de ambiente.
 
 
 **Essencial:** Guarde uma cópia da chave em um cofre externo protegido e offline. Sem essa chave, nem um backup do banco recupera as credenciais. Não inclua a chave em logs, páginas, e-mails, backup público, `.env` versionado ou capturas de tela. Se a hospedagem não permite variáveis de ambiente confiáveis, não ative o cofre antes de definir um método seguro alternativo.
