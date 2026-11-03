@@ -12,6 +12,7 @@ try {
     $stmt->execute([$email]);
     $admin = $stmt->fetch(PDO::FETCH_ASSOC);
     if ($admin && password_verify($senha, $admin['senha'])) {
+        session_regenerate_id(true);
         $_SESSION['admin_id'] = (int)$admin['id'];
         header('Location: ../views/admin/dashboard.php'); exit;
     }
