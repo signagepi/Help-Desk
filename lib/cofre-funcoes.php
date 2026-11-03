@@ -17,6 +17,17 @@ function cofre_cabecalhos(bool $json = false): void
     }
 }
 
+function cofre_exigir_https(): void
+{
+    if (PHP_SAPI === 'cli') { return; }
+    $https = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== '' && strtolower((string) $_SERVER['HTTPS']) !== 'off';
+    $local = in_array($_SERVER['REMOTE_ADDR'] ?? '', ['127.0.0.1', '::1'], true);
+    if (!$https && !$local) {
+        http_response_code(403);
+        exit('O Cofre de Senhas exige uma conexão HTTPS segura.');
+    }
+}
+
 function cofre_admin_id(): int
 {
     return (int) ($_SESSION['admin_id'] ?? 0);
