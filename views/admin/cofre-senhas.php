@@ -52,7 +52,7 @@ unset($_SESSION['cofre_aviso'], $_SESSION['cofre_erro']);
 <?php if ($aviso): ?><div class="hd-alert hd-alert-success" role="status"><?= h_cofre($aviso) ?></div><?php endif; ?>
 <?php if ($erro): ?><div class="hd-alert hd-alert-error" role="alert"><?= h_cofre($erro) ?></div><?php endif; ?>
 <section class="hd-card hd-card-pad cofre-card" aria-labelledby="cofre-titulo-lista">
-<div class="hd-section-head"><div><h2 id="cofre-titulo-lista">Credenciais salvas</h2><p><?= (int) $total ?> registro(s) encontrado(s)</p></div><a class="hd-btn hd-btn-primary" href="#cofre-formulario">+ Nova credencial</a></div>
+<div class="hd-section-head"><div><h2 id="cofre-titulo-lista">Credenciais salvas</h2><p><?= (int) $total ?> registro(s) encontrado(s)</p></div><div class="hd-actions"><a class="hd-btn hd-btn-outline" href="cofre-auditoria.php">Histórico de acessos</a><a class="hd-btn hd-btn-primary" href="#cofre-formulario">+ Nova credencial</a></div></div>
 <form class="hd-form-grid" method="get" action="cofre-senhas.php">
 <div class="hd-field"><label class="hd-label" for="cofre-busca">Buscar por título ou categoria</label><input class="hd-input" id="cofre-busca" name="q" value="<?= h_cofre($q) ?>" maxlength="100"></div>
 <div class="hd-field"><label class="hd-label" for="cofre-filtro-cliente">Filtrar cliente</label><select class="hd-select" name="cliente_id" id="cofre-filtro-cliente"><option value="">Todos / pessoais</option><?php foreach ($clientes as $cliente): ?><option value="<?= (int) $cliente['id'] ?>" <?= $clienteFiltro === (int) $cliente['id'] ? 'selected' : '' ?>><?= h_cofre($cliente['nome']) ?></option><?php endforeach; ?></select></div>
